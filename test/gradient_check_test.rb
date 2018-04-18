@@ -1,7 +1,7 @@
 require 'chainer/gradient_check'
 
 def _uniform(*shape)
-  return Numo::SFloat.new(shape).rand(2) - 1
+  return Cumo::SFloat.new(shape).rand(2) - 1
 end
 
 def _dot(x, y)
@@ -94,8 +94,8 @@ end
 
 class NumericalGradientInvalidType < Test::Unit::TestCase
   def _setup()
-    @x = Numo::NArray.cast(0)
-    @y = Numo::NArray.cast(0)
+    @x = Cumo::NArray.cast(0)
+    @y = Cumo::NArray.cast(0)
     @f = lambda{}
   end
 
@@ -126,8 +126,8 @@ end
 
 class NumericalGradientEpsTest < Test::Unit::TestCase
   def _setup()
-    @x = Numo::SFloat.cast(0.0)
-    @y = Numo::SFloat.cast(1.0)
+    @x = Cumo::SFloat.cast(0.0)
+    @y = Cumo::SFloat.cast(1.0)
   end
 
   def check_different_eps(x, y)
@@ -168,16 +168,16 @@ end
 class TestCheckBackward < Test::Unit::TestCase
   data = {
     'test1' => {dtype: nil},
-    'test2' => {dtype: Numo::SFloat},
-    'test3' => {dtype: Numo::DFloat}}
+    'test2' => {dtype: Cumo::SFloat},
+    'test3' => {dtype: Cumo::DFloat}}
 
   data(data)
   def test_multiple_output(data)
     @dtype = data[:dtype]
-    x1 = Numo::DFloat[1]
-    x2 = Numo::DFloat[1]
-    g1 = Numo::DFloat[1]
-    g2 = Numo::DFloat[1]
+    x1 = Cumo::DFloat[1]
+    x2 = Cumo::DFloat[1]
+    g1 = Cumo::DFloat[1]
+    g2 = Cumo::DFloat[1]
     f = lambda do |x, y|
       s,t = Ident.new().(x, y)
       u = Ident.new().(t)
@@ -187,9 +187,9 @@ class TestCheckBackward < Test::Unit::TestCase
   end
 
   def test_no_grads_for_not_float()
-    x1 = Numo::DFloat.cast([1])
-    x2 = Numo::Int32.cast([0, 1])
-    g1 = Numo::DFloat.cast([1])
+    x1 = Cumo::DFloat.cast([1])
+    x2 = Cumo::Int32.cast([0, 1])
+    g1 = Cumo::DFloat.cast([1])
     f = lambda do |x, y|
       s = Ident.new().(x)
       return [s]
@@ -198,9 +198,9 @@ class TestCheckBackward < Test::Unit::TestCase
   end
 
   def test_no_grads_option()
-    x1 = Numo::DFloat.cast([1])
-    x2 = Numo::DFloat.cast([1])
-    g1 = Numo::DFloat.cast([1])
+    x1 = Cumo::DFloat.cast([1])
+    x2 = Cumo::DFloat.cast([1])
+    g1 = Cumo::DFloat.cast([1])
     f = lambda do |x, y|
       s = Ident.new().(x)
       return [s]

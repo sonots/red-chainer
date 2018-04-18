@@ -29,7 +29,7 @@ module Chainer
 
         @state[:m] += (1 - hp.beta1) * (grad - @state[:m])
         @state[:v] += (1 - hp.beta2) * (grad * grad - @state[:v])
-        param.data -= lr * @state[:m] / (Numo::NMath.sqrt(@state[:v]) + hp.eps)
+        param.data -= lr * @state[:m] / (Cumo::NMath.sqrt(@state[:v]) + hp.eps)
       end
 
       def lr

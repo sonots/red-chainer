@@ -71,7 +71,7 @@ require 'chainer/reporter'
 require 'chainer/serializer'
 require 'chainer/serializers/marshal'
 
-require 'numo/narray'
+require 'cumo/narray'
 
 module Chainer
   def self.configure

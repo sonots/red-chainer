@@ -1,7 +1,7 @@
 module Chainer
   def _copy_arrays(xs)
     xp = Chainer::get_array_module(*xs)
-    xs.map{|x| (x.is_a? Numo::NArray) ? x.dup : x}
+    xs.map{|x| (x.is_a? Cumo::NArray) ? x.dup : x}
   end
 
   # Computes numerical gradient by finite differences.
@@ -23,7 +23,7 @@ module Chainer
     raise unless eps > 0
     inputs = inputs.to_a
     grad_outputs = grad_outputs.to_a
-    xp = Numo::NArray
+    xp = Cumo::NArray
     grads = inputs.map{|x| x.new_zeros()}
 
     if inputs[0].ndim < 2
@@ -43,7 +43,7 @@ module Chainer
 
         ys1.zip(ys2, grad_outputs).each do |y1, y2, gy|
           if !gy.nil?
-            if  ((y1 - y2) * gy).is_a? Numo::NArray
+            if  ((y1 - y2) * gy).is_a? Cumo::NArray
               dot = ((y1 - y2) * gy).sum()
             else
               dot = ((y1 - y2) * gy).inject(:+)
@@ -73,9 +73,9 @@ module Chainer
   #
   #   def test_my_func(self):
   #     func = MyFunc()
-  #     x1_data = Numo::NArray[...]
-  #     x2_data = Numo::NArray[...]
-  #     gy_data = Numo::NArray[...]
+  #     x1_data = Cumo::NArray[...]
+  #     x2_data = Cumo::NArray[...]
+  #     gy_data = Cumo::NArray[...]
   #     check_backward(func, [x1_data, x2_data], gy_data)
   #
   # This method creates +Chainer::Variable+ objects with +x_data+
@@ -101,8 +101,8 @@ module Chainer
   #
   # If +MyFunc+ returns multiple outputs, pass all gradients for outputs as a Array:
   #
-  #   gy1_data = Numo::NArray[...]
-  #   gy2_data = Numo::NArray[...]
+  #   gy1_data = Cumo::NArray[...]
+  #   gy2_data = Cumo::NArray[...]
   #   check_backward(func, x1_data, [gy1_data, gy2_data])
   #
   # You can also test a +Chainer::Link+.
@@ -111,7 +111,7 @@ module Chainer
   #
   #   check_backward(my_link, [x1_data, x2_data], gy_data, [my_link.W, my_link.b])
   #
-  # Note that +params+ are not +Numo::NArray+ s,
+  # Note that +params+ are not +Cumo::NArray+ s,
   # but +Chainer::Variables+ s.
   #
   # Function objects are acceptable as +func+ argument:
@@ -128,11 +128,11 @@ module Chainer
   #   +Chainer::Variable+. You can use +Chainer::Function+
   #   object, +Chainer::Link+ object or a function satisfying the
   #   condition.
-  # @param [Numo::NArray or Array<Numo::NArray>] x_data A set of +Numo::NArray+ s to be
-  #   passed to +func+. If +x_data+ is one +Numo::NArray+ object, it is
+  # @param [Cumo::NArray or Array<Cumo::NArray>] x_data A set of +Cumo::NArray+ s to be
+  #   passed to +func+. If +x_data+ is one +Cumo::NArray+ object, it is
   #   treated as +(x_data,)+.
-  # @param [Numo::NArray or Array<Numo::NArray> or nil] y_grad A set of +Numo::NArray+ s representing gradients of return-values of
-  #   +func+. If +y_grad+ is one +Numo::NArray+ object, it is
+  # @param [Cumo::NArray or Array<Cumo::NArray> or nil] y_grad A set of +Cumo::NArray+ s representing gradients of return-values of
+  #   +func+. If +y_grad+ is one +Cumo::NArray+ object, it is
   #   treated as +(y_grad,)+. If +func+ is a loss-function,
   #   +y_grad+ should be set to +nil+.
   # @param [Chainer::Variable or Array<Chainder::Variable>] params  A set of +Chainer::Variable+ s whose gradients are checked.
@@ -145,7 +145,7 @@ module Chainer
   # @param [Float] rtol Relative tolerance to be passed to +Chainer::Testing.assert_allclose+.
   # @param [Array<Boolean>] no_grads Flag to skip variable for gradient assertion.
   #   It should be same length as +x_data+.
-  # @param [Numo::NArray.class] dtype +x_data+ and +y_grad+ are casted to this
+  # @param [Cumo::NArray.class] dtype +x_data+ and +y_grad+ are casted to this
   #   dtype when calculating numerical gradients. Only float types and
   #   +nil+ are allowed.
   # @see
@@ -185,14 +185,14 @@ module Chainer
     if dtype.nil?
       casted_xs = x_data.map{|x| Chainer::Variable.new(x)}
     else
-      if (dtype != Numo::DFloat) and (dtype != Numo::SFloat)
+      if (dtype != Cumo::DFloat) and (dtype != Cumo::SFloat)
         raise TypeError, "`dtype` is allowed only float type"
       end
       if (params).size > 0
         raise TypeError, "`dtype` is available only if `params` is empty"
       end
       casted_xs = x_data.map{|x|
-                    if x.class == Numo::DFloat or x.class == Numo::SFloat
+                    if x.class == Cumo::DFloat or x.class == Cumo::SFloat
                       Chainer::Variable.new(dtype.cast(x))
                     else
                       Chainer::Variable.new(x)
@@ -207,7 +207,7 @@ module Chainer
     end
 
     if no_grads.nil?
-      no_grads = xs.map{|x| (x.dtype != Numo::DFloat) and (x.dtype != Numo::SFloat)}
+      no_grads = xs.map{|x| (x.dtype != Cumo::DFloat) and (x.dtype != Cumo::SFloat)}
     else
       if no_grads.size != xs.size
         raise TypeError, "Length of no_grads param and xs should be same."
@@ -224,7 +224,7 @@ module Chainer
       if dtype.nil?
         raise unless gx.class == x.grad.class
       else
-        if ((gx.class != Numo::DFloat) and (gx.class != Numo::SFloat)) and (gx.class != dtype)
+        if ((gx.class != Cumo::DFloat) and (gx.class != Cumo::SFloat)) and (gx.class != dtype)
            raise
         end
       end

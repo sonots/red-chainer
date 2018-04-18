@@ -35,11 +35,11 @@ module Chainer
           x, gamma, beta = inputs[0], inputs[1], inputs[2]
           if Chainer.configuration.train
             if @running_mean.nil?
-              @running_mean = Numo::NArray[*gamma].new_zeros
-              @running_var = Numo::NArray[*gamma].new_zeros
+              @running_mean = Cumo::NArray[*gamma].new_zeros
+              @running_var = Cumo::NArray[*gamma].new_zeros
             else
-              @running_mean = Numo::NArray[*@running_mean]
-              @running_var = Numo::NArray[*@running_var]
+              @running_mean = Cumo::NArray[*@running_mean]
+              @running_var = Cumo::NArray[*@running_var]
             end
           elsif inputs.size == 5
             @fixed_mean = inputs[3]
@@ -63,7 +63,7 @@ module Chainer
             var = @fixed_var + @eps
           end
 
-          @std = Numo::NMath.sqrt(var)
+          @std = Cumo::NMath.sqrt(var)
 
           mean_expander = [1] + mean.shape + [1] * (x.ndim - head_ndim)
           x_mu = x - mean.reshape(*mean_expander)
@@ -77,12 +77,12 @@ module Chainer
             m = x.size.div(gamma.size)
             adjust = m / [m - 1.0, 1.0].max
             @running_mean *= @decay
-            temp_ar = Numo::NArray[*mean]
+            temp_ar = Cumo::NArray[*mean]
             temp_ar *= (1 - @decay)
             @running_mean += temp_ar
             
             @running_var *= @decay
-            temp_ar = Numo::NArray[*var]
+            temp_ar = Cumo::NArray[*var]
             temp_ar *= ((1 - @decay) * adjust)
             @running_var += temp_ar
           end
@@ -100,7 +100,7 @@ module Chainer
           if inputs.size == 5
             mean = inputs[3]
             var = inputs[4]
-            std = Numo::NMath.sqrt(var)
+            std = Cumo::NMath.sqrt(var)
             gs = gamma / std
             gbeta = gy.sum(axis: axis)
 

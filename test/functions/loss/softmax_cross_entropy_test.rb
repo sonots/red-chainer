@@ -7,7 +7,7 @@ class TestSoftmaxCrossEntropy < Test::Unit::TestCase
   cache_score  = [true, false]
   normalize    = [true, false]
   ignore_index = [nil, false, [0], [0, 1], [0, 1, 0]]
-  dtype        = [Numo::SFloat]
+  dtype        = [Cumo::SFloat]
   weight_apply = [false, true]
 
   value1 = shape.product(cache_score, normalize, ignore_index, dtype, weight_apply).collect {|v|
@@ -17,7 +17,7 @@ class TestSoftmaxCrossEntropy < Test::Unit::TestCase
   cache_score  = [false]
   normalize    = [true]
   ignore_index = [[0, 1]]
-  dtype        = [Numo::SFloat, Numo::DFloat]
+  dtype        = [Cumo::SFloat, Cumo::DFloat]
   weight_apply = [false, true]
 
   value2 = shape.product(cache_score, normalize, ignore_index, dtype, weight_apply).collect {|v|
@@ -35,18 +35,18 @@ class TestSoftmaxCrossEntropy < Test::Unit::TestCase
 
     if @shape.nil?
       @x = @dtype.cast([[-1000, 1]])
-      @t = Numo::Int32[0]
+      @t = Cumo::Int32[0]
     else
       @x = @dtype.new(@shape).rand(2) - 1
       out_shape = [@shape[0]] + @shape[2..-1]
-      @t = Numo::Int32.new(out_shape).rand(@shape[1])
+      @t = Cumo::Int32.new(out_shape).rand(@shape[1])
 
       if @ignore_index && @ignore_index.size <= @t.ndim
         @t[@ignore_index] = -1
       end
     end
     @check_forward_options = {}
-    @check_backward_options_dtype = Numo::DFloat
+    @check_backward_options_dtype = Cumo::DFloat
 
     if @weight_apply
       @class_weight = @dtype.new([@x.shape[1]]).rand(10)
@@ -72,7 +72,7 @@ class TestSoftmaxCrossEntropy < Test::Unit::TestCase
       if ti == -1
         next
       end
-      log_z = Numo::NMath.log(Numo::NMath.exp(xi).sum())
+      log_z = Cumo::NMath.log(Cumo::NMath.exp(xi).sum())
       if class_weight.nil?
         loss_expect -= (xi - log_z)[ti]
       else
@@ -112,13 +112,13 @@ end
 
 class TestClassWeightAssertion < Test::Unit::TestCase
   def _setup()
-    @x = Numo::NArray[[0, 1], [2, 3]]
-    @t = Numo::NArray[0, 1]
+    @x = Cumo::NArray[[0, 1], [2, 3]]
+    @t = Cumo::NArray[0, 1]
   end
 
   def test_ndim_assertion()
     _setup()
-    wrong_ndim_class_weight = Numo::NArray.cast([[0, 0]])
+    wrong_ndim_class_weight = Cumo::NArray.cast([[0, 0]])
     assert_raise(ArgumentError) {
       Chainer::Functions::Loss::SoftmaxCrossEntropy.softmax_cross_entropy(@x, @t, class_weight: wrong_ndim_class_weight)
     }
@@ -126,7 +126,7 @@ class TestClassWeightAssertion < Test::Unit::TestCase
 
   def test_dtype_assertion()
     _setup()
-    wrong_dtype_class_weight = Numo::Int32.cast([0, 0])
+    wrong_dtype_class_weight = Cumo::Int32.cast([0, 0])
     assert_raise(ArgumentError) {
       Chainer::Functions::Loss::SoftmaxCrossEntropy.softmax_cross_entropy(@x, @t, class_weight: wrong_dtype_class_weight)
     }
@@ -134,7 +134,7 @@ class TestClassWeightAssertion < Test::Unit::TestCase
 
   def test_variable_assertion()
     _setup()
-    wrong_inst_class_weight = Chainer::Variable.new(Numo::NArray.cast([0, 0]))
+    wrong_inst_class_weight = Chainer::Variable.new(Cumo::NArray.cast([0, 0]))
     assert_raise(ArgumentError) {
       Chainer::Functions::Loss::SoftmaxCrossEntropy.softmax_cross_entropy(@x, @t, class_weight: wrong_inst_class_weight)
     }
@@ -146,7 +146,7 @@ class TestElementwiseSoftmaxCrossEntropy < Test::Unit::TestCase
   cache_score  = [true, false]
   normalize    = [true, false]
   ignore_index = [nil, false, [0], [0, 1], [0, 1, 0]]
-  dtype        = [Numo::SFloat]
+  dtype        = [Cumo::SFloat]
   weight_apply = [false, true]
 
   value1 = shape.product(cache_score, normalize, ignore_index, dtype, weight_apply).collect {|v|
@@ -156,7 +156,7 @@ class TestElementwiseSoftmaxCrossEntropy < Test::Unit::TestCase
   cache_score  = [false]
   normalize    = [true]
   ignore_index = [[0, 1]]
-  dtype        = [Numo::SFloat, Numo::DFloat]
+  dtype        = [Cumo::SFloat, Cumo::DFloat]
   weight_apply = [false, true]
 
   value2 = shape.product(cache_score, normalize, ignore_index, dtype, weight_apply).collect {|v|
@@ -174,11 +174,11 @@ class TestElementwiseSoftmaxCrossEntropy < Test::Unit::TestCase
 
     if @shape.nil?
       @x = @dtype[[-1000, 1]]
-      @t = Numo::Int32.cast([0])
+      @t = Cumo::Int32.cast([0])
     else
       @x = @dtype.new(@shape).rand(2) - 1
       out_shape = [@shape[0]] + (@shape[2..-1])
-      @t = Numo::Int32.new(out_shape).rand(@shape[1])
+      @t = Cumo::Int32.new(out_shape).rand(@shape[1])
       if @ignore_index && @ignore_index.size <= @t.ndim
         @t[@ignore_index] = -1
       end
@@ -186,7 +186,7 @@ class TestElementwiseSoftmaxCrossEntropy < Test::Unit::TestCase
 
     @g = @dtype.new(@t.shape).rand(2) - 1
     @check_forward_options = {}
-    @check_backward_options_dtype = Numo::DFloat
+    @check_backward_options_dtype = Cumo::DFloat
 
     if @weight_apply
       @class_weight = @dtype.new([@x.shape[1]]).rand(10)
@@ -213,7 +213,7 @@ class TestElementwiseSoftmaxCrossEntropy < Test::Unit::TestCase
       if ti == -1
         next
       end
-      log_z = Numo::NMath.log(Numo::NMath.exp(xi).sum())
+      log_z = Cumo::NMath.log(Cumo::NMath.exp(xi).sum())
 
       if class_weight.nil?
         loss_expect = -(xi - log_z)[ti]
@@ -256,8 +256,8 @@ class TestSoftmaxCrossEntropyInvalidReduce < Test::Unit::TestCase
     @normalize    = data[:normalize]
     @cache_score  = data[:cache_score]
 
-    @x = Numo::SFloat.new([2, 3]).rand(2) - 1
-    @t = Numo::Int32.zeros([2])
+    @x = Cumo::SFloat.new([2, 3]).rand(2) - 1
+    @t = Cumo::Int32.zeros([2])
   end
 
   def check_invalid_reduce(x, t)
@@ -275,7 +275,7 @@ end
 
 class TestNonDefaultIgnoreLabel < Test::Unit::TestCase
   reduce       = ['mean', 'no']
-  class_weight = [nil, Numo::SFloat.ones([3])]
+  class_weight = [nil, Cumo::SFloat.ones([3])]
 
   data = reduce.product(class_weight).collect {|v|
     {reduce: v[0], class_weight: v[1]}}
@@ -286,14 +286,14 @@ class TestNonDefaultIgnoreLabel < Test::Unit::TestCase
     @class_weight = data[:class_weight]
 
     @ignore_label = -2
-    @x = Numo::SFloat.new([2, 3]).rand(2) - 1
-    @t = Numo::Int32.new([2]).fill(@ignore_label)
+    @x = Cumo::SFloat.new([2, 3]).rand(2) - 1
+    @t = Cumo::Int32.new([2]).fill(@ignore_label)
     if @reduce == "mean"
       gy_shape = []
     else
       gy_shape = [2]
     end
-    @gy = Numo::SFloat.new(gy_shape).rand(2) - 1
+    @gy = Cumo::SFloat.new(gy_shape).rand(2) - 1
   end
 
   def check_forward(xp)
@@ -309,7 +309,7 @@ class TestNonDefaultIgnoreLabel < Test::Unit::TestCase
     if @reduce == "mean"
       expect = 0.0
     else
-      expect = Numo::SFloat.zeros([2])
+      expect = Cumo::SFloat.zeros([2])
     end
     Chainer::Testing.assert_allclose(expect, loss.data)
   end
@@ -317,7 +317,7 @@ class TestNonDefaultIgnoreLabel < Test::Unit::TestCase
   data(data)
   def test_forward_cpu(data)
     _setup(data)
-    check_forward(Numo::NArray)
+    check_forward(Cumo::NArray)
   end
 
   def check_backward(xp)
@@ -336,6 +336,6 @@ class TestNonDefaultIgnoreLabel < Test::Unit::TestCase
   data(data)
   def test_backward_cpu(data)
     _setup(data)
-    check_backward(Numo::NArray)
+    check_backward(Cumo::NArray)
   end
 end

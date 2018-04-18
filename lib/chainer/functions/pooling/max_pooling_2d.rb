@@ -41,7 +41,7 @@ module Chainer
           gcol = @in_dtype.zeros(n * c * out_h * out_w * kh * kw)
 
           indexes = @indexes.flatten
-          indexes += Numo::Int64.new((indexes.size * kh * kw) / (kh * kw)).seq(0, kh * kw)
+          indexes += Cumo::Int64.new((indexes.size * kh * kw) / (kh * kw)).seq(0, kh * kw)
          
           gcol[indexes] = gy[0].flatten.dup
           gcol = gcol.reshape(n, c, out_h, out_w, kh, kw)

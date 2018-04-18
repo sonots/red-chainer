@@ -10,7 +10,7 @@ module Chainer
       end
 
       if shape.nil?
-        if @initializer.kind_of?(Numo::NArray)
+        if @initializer.kind_of?(Cumo::NArray)
           super(initializer, name: name)
         else
           super(name: name)
@@ -19,11 +19,11 @@ module Chainer
           @grad_initializer = Chainer::Initializers.nan()
         end
       else
-        if initializer.kind_of?(Numo::NArray)
+        if initializer.kind_of?(Cumo::NArray)
           initializer = Initializers::Constant.new(initializer)
         end
         data = Chainer::Initializers.generate_array(initializer, shape)
-        grad = Numo::NArray[*[1, 2]].new_fill(-922337203)
+        grad = Cumo::NArray[*[1, 2]].new_fill(-922337203)
         super(data, name: name, grad: grad)
       end
 

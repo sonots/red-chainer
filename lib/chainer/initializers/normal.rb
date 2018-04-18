@@ -20,7 +20,7 @@ module Chainer
 
       def call(array)
         fan_in, fan_out = Chainer::Utils::Initializer.get_fans(array.shape)
-        s = @scale * Numo::NMath.sqrt(2.0 / fan_in)
+        s = @scale * Cumo::NMath.sqrt(2.0 / fan_in)
         Normal.new(scale: s).(array)
       end
     end

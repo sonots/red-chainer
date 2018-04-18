@@ -4,10 +4,10 @@ require 'chainer/functions/activation/tanh'
 
 class Chainer::Functions::Activation::TanhTest < Test::Unit::TestCase
   data = {
-    'test1' => {shape: [3, 2], dtype: Numo::SFloat},
-    'test2' => {shape: [], dtype: Numo::SFloat},
-    'test3' => {shape: [3, 2], dtype: Numo::DFloat},
-    'test4' => {shape: [], dtype: Numo::DFloat}}
+    'test1' => {shape: [3, 2], dtype: Cumo::SFloat},
+    'test2' => {shape: [], dtype: Cumo::SFloat},
+    'test3' => {shape: [3, 2], dtype: Cumo::DFloat},
+    'test4' => {shape: [], dtype: Cumo::DFloat}}
 
   def _setup(data)
     @shape = data[:shape]

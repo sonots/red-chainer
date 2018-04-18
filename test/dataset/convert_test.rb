@@ -24,7 +24,7 @@ class TestConcatExamples < Test::Unit::TestCase
   end
 
   def test_concat_arrays_cpu()
-    arrays = get_arrays_to_concat(Numo)
+    arrays = get_arrays_to_concat(Cumo)
     check_concat_arrays(arrays)
   end
 
@@ -46,7 +46,7 @@ class TestConcatExamples < Test::Unit::TestCase
   end
 
   def test_concat_tuples_cpu()
-    tuples = get_tuple_arrays_to_concat(Numo)
+    tuples = get_tuple_arrays_to_concat(Cumo)
     check_concat_tuples(tuples)
   end
 end

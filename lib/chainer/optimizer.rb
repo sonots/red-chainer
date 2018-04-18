@@ -81,7 +81,7 @@ module Chainer
           # try to initialize the state to retrieve state entries
           @state = {}
           self_copy = self.dup
-          arr = Numo::SFloat.new(1)
+          arr = Cumo::SFloat.new(1)
           self_copy.init_state(Chainer::Variable.new(arr, grad: arr))
           @state.keys.each do |key|
             @state[key] = serializer.(key.to_s, nil)
@@ -101,7 +101,7 @@ module Chainer
         @state = {}
         init_state(param)
       end
-      @state.select! { |_, v| v.kind_of?(Numo::NArray) }
+      @state.select! { |_, v| v.kind_of?(Cumo::NArray) }
     end
   end
 

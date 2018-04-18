@@ -4,7 +4,7 @@ module Chainer
       def self.force_array(x, dtype=nil)
         if x.is_a? Integer or x.is_a? Float
           if dtype.nil?
-            Numo::NArray.cast(x)
+            Cumo::NArray.cast(x)
           else
             dtype.cast(x.dup)
           end

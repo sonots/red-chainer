@@ -21,22 +21,22 @@ end
 
 class Chainer::VariableTest < Test::Unit::TestCase
   data = {
-    'test1' => {x_shape: [10], c_shape: [2, 5], label: '(2, 5), Numo::SFloat'},
-    'test2' => {x_shape: [], c_shape: [1], label: '(1), Numo::SFloat'}}
+    'test1' => {x_shape: [10], c_shape: [2, 5], label: '(2, 5), Cumo::SFloat'},
+    'test2' => {x_shape: [], c_shape: [1], label: '(1), Cumo::SFloat'}}
 
   def _setup(data)
     @x_shape = data[:x_shape]
     @label = data[:label]
     @c_shape = data[:c_shape]
-    @x = Numo::SFloat.new(@x_shape).rand(2) - 1
-    @a = Numo::SFloat.new(@x_shape).rand(9.9) + 0.1
+    @x = Cumo::SFloat.new(@x_shape).rand(2) - 1
+    @a = Cumo::SFloat.new(@x_shape).rand(9.9) + 0.1
 
     if @x_shape.size != 0
-        @size = Numo::NArray.cast(@x_shape).prod().to_i
+        @size = Cumo::NArray.cast(@x_shape).prod().to_i
     else
         @size = 1
     end
-    @c = Numo::DFloat.new(@size).seq(0).reshape(*@c_shape).cast_to(Numo::SFloat)
+    @c = Cumo::DFloat.new(@size).seq(0).reshape(*@c_shape).cast_to(Cumo::SFloat)
   end
 
   def check_attributes(gpu)
@@ -112,28 +112,28 @@ class Chainer::VariableTest < Test::Unit::TestCase
   end
 
   def test_grad_type_check_pass()
-    a = Chainer::Variable.new(Numo::SFloat.new([3]))
-    a.grad = Numo::SFloat.new([3])
+    a = Chainer::Variable.new(Cumo::SFloat.new([3]))
+    a.grad = Cumo::SFloat.new([3])
   end
 
   def test_grad_type_check_type()
-    a = Chainer::Variable.new(Numo::SFloat.new([]))
+    a = Chainer::Variable.new(Cumo::SFloat.new([]))
     #assert_raise(TypeError) { ## No Error
-      a.grad = Numo::SFloat.new()
+      a.grad = Cumo::SFloat.new()
     #}
   end
 
   def test_grad_type_check_dtype()
-    a = Chainer::Variable.new(Numo::SFloat.new([3]))
+    a = Chainer::Variable.new(Cumo::SFloat.new([3]))
     assert_raise(TypeError) {
-      a.grad = Numo::DFloat.new([3])
+      a.grad = Cumo::DFloat.new([3])
     }
   end
 
   def test_grad_type_check_shape()
-    a = Chainer::Variable.new(Numo::SFloat.new([3]))
+    a = Chainer::Variable.new(Cumo::SFloat.new([3]))
     assert_raise(TypeError) {
-      a.grad = Numo::SFloat.new([2])
+      a.grad = Cumo::SFloat.new([2])
     }
   end
 end

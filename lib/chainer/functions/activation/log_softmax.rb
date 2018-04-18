@@ -4,9 +4,9 @@ module Chainer
       def self.logsumexp(x)
         m = x.max(axis: 1, keepdims: true)
         y = x - m
-        y = Numo::NMath.exp(y)
+        y = Cumo::NMath.exp(y)
         s = y.sum(axis: 1, keepdims: true)
-        s = Numo::NMath.log(s)
+        s = Cumo::NMath.log(s)
         m + s
       end
 
@@ -36,19 +36,19 @@ module Chainer
         #   because +softmax(x)+ may returns +0+.
         #   +log_softmax+ method is more stable.
         #
-        # @param [Chainer::Variable or Numo::NArray] x Input variable. A $n$-dimensional ($n \\geq 2$) float array.
+        # @param [Chainer::Variable or Cumo::NArray] x Input variable. A $n$-dimensional ($n \\geq 2$) float array.
         # @return [Chainer::Variable] Output variable. A $n$-dimensional ($n \\geq 2$) float array, which is the same shape with x.
         #
         # @see Chainer::Functions::Softmax
         #
         # @example
-        #   > x = Numo::SFloat[[0, 1, 2], [0, 2, 4]]
-        #   => Numo::SFloat#shape=[2,3]
+        #   > x = Cumo::SFloat[[0, 1, 2], [0, 2, 4]]
+        #   => Cumo::SFloat#shape=[2,3]
         #   [[0, 1, 2],
         #    [0, 2, 4]]
         #   > F = Chainer::Functions::Activation::LogSoftmax
         #   > F.log_softmax(x).data
-        #   => Numo::SFloat#shape=[2,3]
+        #   => Cumo::SFloat#shape=[2,3]
         #   [[-2.40761, -1.40761, -0.407606],
         #    [-4.14293, -2.14293, -0.142932]]
         # @example (T.B.I : F.log, F.softmax)
@@ -70,7 +70,7 @@ module Chainer
 
         def backward(x, gy)
           y = @output_data[0]
-          gx = gy[0] - Numo::NMath.exp(y) * gy[0].sum(axis: 1, keepdims: true)
+          gx = gy[0] - Cumo::NMath.exp(y) * gy[0].sum(axis: 1, keepdims: true)
           [gx]
         end
       end

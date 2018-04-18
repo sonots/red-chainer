@@ -25,13 +25,13 @@ module Chainer
       def call(key, value)
         ret = value
         if value.is_a?(TrueClass)
-          arr = Numo::Bit[1]
+          arr = Cumo::Bit[1]
         elsif value.is_a?(FalseClass)
-          arr = Numo::Bit[0]
+          arr = Cumo::Bit[0]
         elsif value.instance_of?(String) || value.nil?
           arr = value
         else
-          arr = Numo::NArray.cast(value)
+          arr = Cumo::NArray.cast(value)
         end
         @target[File.join(@path, key)] = arr
         ret
@@ -72,7 +72,7 @@ module Chainer
           return dataset
         elsif value.instance_of?(String)
           return dataset
-        elsif value.is_a?(Numo::NArray)
+        elsif value.is_a?(Cumo::NArray)
           value.store(dataset)
           return value
         elsif value.is_a?(TrueClass) || value.is_a?(FalseClass)

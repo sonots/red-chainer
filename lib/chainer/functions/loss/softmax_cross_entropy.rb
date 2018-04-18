@@ -14,10 +14,10 @@ module Chainer
           unless class_weight.nil?
             if @class_weight.ndim != 1
               raise ArgumentError, 'class_weight.ndim should be 1'
-            elsif (@class_weight.class != Numo::DFloat) and (@class_weight.class != Numo::SFloat)
-              raise ArgumentError, "The dtype of class_weight should be 'Numo::DFloat' or 'Numo::SFloat'"
+            elsif (@class_weight.class != Cumo::DFloat) and (@class_weight.class != Cumo::SFloat)
+              raise ArgumentError, "The dtype of class_weight should be 'Cumo::DFloat' or 'Cumo::SFloat'"
             elsif @class_weight.kind_of?(Chainer::Variable)
-              raise ArgumentError, 'class_weight should be a Numo::NArray, not a chainer.Variable'
+              raise ArgumentError, 'class_weight should be a Cumo::NArray, not a chainer.Variable'
             end
           end
 
@@ -34,7 +34,7 @@ module Chainer
           log_y = Activation._log_softmax(x)
 
           if @cache_score
-            @y = Numo::NMath.exp(log_y)
+            @y = Cumo::NMath.exp(log_y)
           end
           if @class_weight
             shape = x.ndim.times.map { |e| e == 1 ? true : 1 }
@@ -79,7 +79,7 @@ module Chainer
             y = @y.dup
           else
             y = Activation._log_softmax(x)
-            y = Numo::NMath.exp(y)
+            y = Cumo::NMath.exp(y)
           end
 
           if y.ndim == 2
@@ -104,8 +104,8 @@ module Chainer
 
             n_unit = t.size / t.shape[0]
             gx = y.reshape(y.shape[0], y.shape[1], true)
-            fst_index = Numo::Int32.new(t.size).seq(0) / n_unit
-            trd_index = Numo::Int32.new(t.size).seq(0) % n_unit
+            fst_index = Cumo::Int32.new(t.size).seq(0) / n_unit
+            trd_index = Cumo::Int32.new(t.size).seq(0) % n_unit
             fst_index.to_a.zip(t.class.maximum(t.flatten.dup, 0).to_a, trd_index.to_a).each{|v| gx[*v] -= 1}
             if @class_weight
               shape = x.ndim.times.map{|d| d == 1 ? true : 1}
