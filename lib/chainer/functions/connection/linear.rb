@@ -14,7 +14,7 @@ module Chainer
           x = as_mat(inputs[0])
           w = inputs[1]
 
-          y = x.dot(w.transpose).cast_to(x.class)
+          y = x.gemm(w, transb: true).cast_to(x.class)
           if inputs.size == 3
             b = inputs[2]
             y += b
@@ -27,7 +27,7 @@ module Chainer
           w = inputs[1]
           gy = grad_outputs[0]
           gx = gy.dot(w).cast_to(x.class).reshape(*inputs[0].shape)
-          gw = gy.transpose.dot(x).cast_to(w.class)
+          gw = gy.gemm(x, transa: true).cast_to(w.class)
           if inputs.size == 3
             gb = gy.sum(0)
             [gx, gw, gb]
