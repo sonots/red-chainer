@@ -26,8 +26,8 @@ module Chainer
         end
 
         [
-          preprocess_cifar(Numo::UInt8[*train_data], Numo::UInt8[*train_labels], with_label, ndim, scale),
-          preprocess_cifar(Numo::UInt8[*test_data], Numo::UInt8[*test_labels], with_label, ndim, scale)
+          preprocess_cifar(Cumo::UInt8[*train_data], Cumo::UInt8[*train_labels], with_label, ndim, scale),
+          preprocess_cifar(Cumo::UInt8[*test_data], Cumo::UInt8[*test_labels], with_label, ndim, scale)
         ]
       end
 
@@ -39,11 +39,11 @@ module Chainer
         else
           raise 'invalid ndim for CIFAR dataset'
         end
-        images = images.cast_to(Numo::SFloat)
+        images = images.cast_to(Cumo::SFloat)
         images *= scale / 255.0
 
         if withlabel
-          labels = labels.cast_to(Numo::Int32)
+          labels = labels.cast_to(Cumo::Int32)
           TupleDataset.new(images, labels)
         else
           images
