@@ -18,7 +18,7 @@ class Chainer::Functions::Array::BroadcastToTest < Test::Unit::TestCase
     }
   ]
 
-  dtypes = [ Numo::SFloat, Numo::DFloat ]
+  dtypes = [ Cumo::SFloat, Cumo::DFloat ]
 
   data =  shapes.map.with_index {|shape, i|
             dtypes.map do |dtype|
@@ -40,7 +40,7 @@ class Chainer::Functions::Array::BroadcastToTest < Test::Unit::TestCase
     in_data = data[:dtype].new(data[:in_shape]).rand
     grads = data[:dtype].new(data[:out_shape]).rand
     check_backward_options = {}
-    if data[:dtype] == Numo::SFloat
+    if data[:dtype] == Cumo::SFloat
         check_backward_options = { eps: 2 ** -5, atol: 1e-3, rtol: 1e-2 }
     end
 
